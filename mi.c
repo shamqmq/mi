@@ -4,6 +4,12 @@
 #include <ncurses.h>
 
 
+// macros
+
+#define KEY_SPACE 32 
+#define KEY_TAB 9
+#define KEY_ESC 27
+
 
 
 //funcs declaration
@@ -21,7 +27,7 @@ int main(int argc, char *argv[])
   // init the terminal
   initscr(); 
   noecho();                     // Disapling echoing
-  raw(); );                     // Disapling echo
+  raw();                        // Disapling echo
   cbreak();                     // Disapling the termional line buffering
   keypad(stdscr , TRUE);        // Accepting special char
   insert_mode();
@@ -33,28 +39,41 @@ int main(int argc, char *argv[])
 
 int insert_mode(void){
   // vars dec
-  char ch;
+  int ch;
 
 
-  while ((int) ch != 27){       //ESC button
+  while ( ch != KEY_ESC){       //ESC button
     ch = getch();
-    switch ((int) ch) {
-      case 13:                 //ReTurn button
-        printw("\n\0");
-        break;
-      case 32:                 //Space button
-        printw(" ");
-        break;
-      case 127:               //Backspace button
-        printw("\b \b");
-        break;
-      case 9:                 //Tab button
-        printw("\t");
-        break;
-      default:
-        printw("%c",ch);
-        break;     
+      switch (ch) {
+        case KEY_UP:
+          printw(" UP ");
+          break;
+        case KEY_DOWN:
+          printw(" DOWN ");
+          break;
+        case KEY_LEFT:
+          printw(" LEFT ");
+          break;
+        case KEY_RIGHT:
+          printw(" RIGHT ");
+          break;
+        case KEY_ENTER:                 //ReTurn button
+          printw("\n\0");
+          break;
+        case KEY_SPACE:                 //Space button
+          printw(" ");
+          break;
+        case KEY_BACKSPACE:               //Backspace button
+          printw("\b \b");
+          break;
+        case KEY_TAB:                 //Tab button
+          printw("\t");
+          break;
+        default:
+          printw("%c",ch);
+          break;     
+      }
     }
-  }
+  
   return EXIT_SUCCESS;
 }
