@@ -19,13 +19,14 @@ int main(int argc, char *argv[])
   // vars declaration
 
   // init the terminal
-  initscr();
-  noecho();
-  raw();
-  cbreak();
+  initscr(); 
+  noecho();                     // Disapling echoing
+  raw(); );                     // Disapling echo
+  cbreak();                     // Disapling the termional line buffering
+  keypad(stdscr , TRUE);        // Accepting special char
   insert_mode();
 
-    endwin();
+  endwin();
   return EXIT_SUCCESS;
 }
 
@@ -35,19 +36,19 @@ int insert_mode(void){
   char ch;
 
 
-  while ((int) ch != 27){
+  while ((int) ch != 27){       //ESC button
     ch = getch();
     switch ((int) ch) {
-      case 13:
+      case 13:                 //ReTurn button
         printw("\n\0");
         break;
-      case 32:
+      case 32:                 //Space button
         printw(" ");
         break;
-      case 127:
+      case 127:               //Backspace button
         printw("\b \b");
         break;
-      case 9:
+      case 9:                 //Tab button
         printw("\t");
         break;
       default:
