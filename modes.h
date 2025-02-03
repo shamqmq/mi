@@ -49,7 +49,7 @@ int insert_mode_movments(void){
     getyx(stdscr, y, x);
       switch (ch) {
         case KEY_ENTER:                 //ReTurn button
-          printw(" \0\n");
+          printw(" \n");
           break;
         case KEY_SPACE:                 //Space button
           printw(" ");
