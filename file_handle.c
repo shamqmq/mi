@@ -91,7 +91,8 @@ int fill_lines(FILE* temp_p) {
     temp = current;
     lines_count++;
   }
-
+  current->end++;
+  *(current->end) = NULL_CHAR;
   rear = current; 
   current = head; 
   return 0;
@@ -104,6 +105,9 @@ int display_text(LINE* top){
     printw("%s", current->begin);
     current = current->next;
   } while (max >= y && current != NULL);
+  current = head;
+  move(0, 0);
+  y = x = 0;
   return 0;
 }
 

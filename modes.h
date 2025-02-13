@@ -8,8 +8,8 @@
 #define KEY_TAB 9
 #define KEY_ESC 27
 #define INPUT_BUFFER 1024 //1024 bytes for the input buffer
-
-
+#define BEGIN 0
+#define END 1
 
 // global vars dec 
 static int x,y;
@@ -36,6 +36,7 @@ int move_up(void);
 int move_down(void);
 int move_left(void);
 int move_right(void);
+void set_edge_curser(int choise);
 //resetting the end pointer in the line buffer
 int reset_end_ptr();
   // vars dec

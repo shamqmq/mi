@@ -76,12 +76,21 @@ int main(int argc, char *argv[]){
     return EXIT_FAILURE;
   }
   
-  refresh();               // refresh the screen
+  //refresh();               // refresh the screen
 
   
   if ( insert_mode() != 0){
     perror("Failed to enter the isert mode");
     close(file_disc);
+    fclose(temp_p);
+    fclose(main_p);
+    return EXIT_FAILURE;
+  }
+  if ( print_lines(head) != 0){
+    perror("Failed to enter the isert mode");
+    close(file_disc);
+    fclose(temp_p);
+    fclose(main_p);
     return EXIT_FAILURE;
   }
   if (free_lines(head) != 0){
@@ -91,10 +100,10 @@ int main(int argc, char *argv[]){
     fclose(main_p);
     return EXIT_FAILURE;
   }
+  getch();            //tset case 
   fclose(temp_p);
   fclose(main_p);
   close(file_disc);
-  getchar();
   endwin();
   return EXIT_SUCCESS;
 }

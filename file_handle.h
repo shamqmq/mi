@@ -3,6 +3,7 @@
 
 #include "include.h"
 
+#define NULL_CHAR 00
 
 int copy_file(FILE* to, FILE* from);      //copying files
 int fill_lines(FILE* temp_p);             //filling every thing in the file into the line structure
