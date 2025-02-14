@@ -98,18 +98,6 @@ int fill_lines(FILE* temp_p) {
   return 0;
 }
 
-int display_text(LINE* top){
-  int max = getmaxy(stdscr);
-  do {
-    getyx(stdscr, y, x);
-    printw("%s", current->begin);
-    current = current->next;
-  } while (max >= y && current != NULL);
-  current = head;
-  move(0, 0);
-  y = x = 0;
-  return 0;
-}
 
 int free_lines(LINE* top){
   current = top;

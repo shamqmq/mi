@@ -9,5 +9,5 @@
 #include <unistd.h>
 #include <ncurses.h>
 #include <limits.h>
-
+#include <math.h>
 #endif

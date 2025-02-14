@@ -2,7 +2,7 @@
 #define FILE_HANDLE_H_
 
 #include "include.h"
-
+#include "modes.h"
 #define NULL_CHAR 00
 
 int copy_file(FILE* to, FILE* from);      //copying files
