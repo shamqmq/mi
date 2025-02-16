@@ -8,21 +8,18 @@ int insert_mode(void){
     getyx(stdscr, y, x);
     switch (ch) {
       case KEY_ENTER:                 //ReTurn button
-        insert_buff("\n\0", x, current);
+        create_node(" ", current, current->next);
         current = current->next;
-        printw("\n\0");
-        move(y+2, 0);
+        redraw_text(head);
         break;
       case KEY_SPACE:                 //Space button
         redraw_iline(" ");
         break;
       case KEY_BACKSPACE:             //Backspace button
-        if (x == 0){
+        if (is_line_empty(current)){
           delete_line(current);
           redraw_text(head);
-        }
-        else
-        {
+        } else if (x != 0){
           redraw_dline(1);
         }
         break;
@@ -72,28 +69,30 @@ int move_left(void){
     move_up();
     set_edge_curser(END);
   }
-  else move(y,x);
+  else if (x < (int) strlen(current->begin)) move(y,x); 
   return 0;
 }
 int move_right(void){
   x++;
-  if (x > (current->end - current->begin - 2) && current->next != NULL){
+  if (x > (current->end - current->begin - 1) && current->next != NULL){
     move_down();
     set_edge_curser(BEGIN);
   }
   else if (x < (int) strlen(current->begin)) move(y,x); 
   return 0;
 }
-int display_text(LINE* top){
-  LINE* temp = current;
-  int max = getmaxy(stdscr);
-  temp = top;
-  do {
-    if (temp == NULL) break;
-    getyx(stdscr, y, x);
-    printw("%s", temp->begin? temp->begin : "");
+int display_text(LINE* top) {
+  LINE* temp = top;
+  int max_y = getmaxy(stdscr);
+  int current_y = 0; 
+  erase();
+  move(0, 0);
+  while (temp != NULL && current_y < max_y) {
+    mvprintw(current_y, 0, "%s", temp->begin ? temp->begin : "");
+    current_y++;
     temp = temp->next;
-  } while (max >= y && temp != NULL);
+  }
+  refresh();
   move(0, 0);
   return 0;
 }
@@ -109,21 +108,29 @@ void redraw_dline(int nchar){
   move(y, x - nchar);
 }
 void redraw_text(LINE* top){
-  clear(); 
+  move(0, 0);
+  initscr(); 
+  /*save(temp_p);*/
   display_text(top);
-  move(y, 0);
-  set_edge_curser(END);
+  if (current == head){
+    move(0, 0);
+    set_edge_curser(BEGIN);
+  } else if (current == rear){
+    move(y - 1, 0);
+    set_edge_curser(END);
+  } else {
+    move(y, 0);
+    set_edge_curser(END);
+  }
 }
 // ==================================================================
 int insert_buff(char* buffer, int x_axis, LINE* cline) {   //cline = current line
   if (cline == NULL || cline->begin == NULL || cline->end == NULL || cline->handler == NULL) {
-    perror("Invalid LINE structure");
     return -1;
   }
 
   int original_len = (int) strlen(cline->begin);
   if (x_axis < 0 || x_axis > original_len) {
-    perror("x_axis out of bounds");
     return -1;
   }
 
@@ -135,7 +142,6 @@ int insert_buff(char* buffer, int x_axis, LINE* cline) {   //cline = current lin
   // Reallocate memory for the new string + null terminator
   char *new_begin = realloc(cline->begin, original_len + size + 1);
   if (new_begin == NULL) {
-    perror("realloc failed");
     return -1;
   }
   cline->begin = new_begin;
@@ -156,80 +162,76 @@ int insert_buff(char* buffer, int x_axis, LINE* cline) {   //cline = current lin
 }
 int delete_buff(int nchar, int x_axis, LINE* cline) {
   if (cline == NULL || cline->begin == NULL) {
-    return -1;  // Invalid input
+    return -1;  
   }
 
   size_t original_len = strlen(cline->begin);
-  
-  // Validate position and deletion count
   if (x_axis < 0 || x_axis >= (int)original_len || nchar <= 0) {
     return -1;
   }
-
-  // Calculate actual deletable characters
   size_t max_deletable = original_len - x_axis;
   if ((size_t) nchar > max_deletable) {
-    nchar = (int) max_deletable;  // Delete only what's available
+    nchar = (int) max_deletable;  
   }
-
-  // Calculate remaining characters after deletion
   size_t remaining = original_len - x_axis - nchar;
-
-  // Shift characters and null-terminate
   memmove(cline->begin + x_axis -1,
           cline->begin + x_axis + nchar -1,
-          remaining + 1);  // +1 to include null terminator
-
-  // Reallocate memory
+          remaining + 1);  
   size_t new_size = original_len - nchar + 1;
   char* new_begin = realloc(cline->begin, new_size);
-  if (!new_begin) {
-    return -1;  // Keep original buffer if realloc fails
-  }
-
-  // Update pointers
   cline->begin = new_begin;
-  cline->begin[new_size - 1] = '\0';  // Explicit null termination
-  
-  // Update LINE metadata
+  cline->begin[new_size - 1] = '\0';  
   cline->handler = cline->begin + x_axis;
   cline->end = cline->begin + new_size - 1;
 
   return 0;
 }
 int delete_line(LINE* cline) {
-    if (!cline || !head || !rear) return -1;
+  if (!cline || !head || !rear) return -1;
 
-    // Preserve next node before deletion for iterator safety
-    LINE *prev_node = cline->prev;
-    LINE *next_node = cline->next;
-    
+  // Preserve next node before deletion for iterator safety
+  LINE *prev_node = cline->prev;
+  LINE *next_node = cline->next;
+  
 
-    // Free line content safely
-    if (cline->begin) {
-        free(cline->begin);
-        cline->begin = NULL;
-    }
+  // Free line content safely
+  if (cline->begin) {
+    free(cline->begin);
+    cline->begin = NULL;
+  }
 
-    // Update neighbors' pointers
-    if (prev_node) prev_node->next = next_node;
-    if (next_node) next_node->prev = prev_node;
+  // Update neighbors' pointers
+  if (prev_node) prev_node->next = next_node;
+  if (next_node) next_node->prev = prev_node;
 
-    // Update global list pointers
-    if (cline == head) head = next_node;
-    if (cline == rear) rear = prev_node;
+  // Update global list pointers
+  if (cline == rear) rear = prev_node;
 
-    // Clear and free the node
-    memset(cline, 0, sizeof(LINE)); // Prevent stale data
-    free(cline);
+  // Clear and free the node
+  memset(cline, 0, sizeof(LINE)); // Prevent stale data
+  free(cline);
 
-    // Auto-update current position safely
-    if (current == cline) {
-        current = next_node ? next_node : prev_node;
-        if (!current) current = head; // Fallback to list head
-    }
+  // Auto-update current position safely
+  if (current == cline) {
+    current = next_node ? next_node : prev_node;
+    if (!current) current = head; // Fallback to list head
+  }
+  
+  if (cline == head) head = current = next_node;
 
-    return 0;
+  return 0;
+}
+void create_node(char* buff, LINE* back, LINE* front) {
+    LINE* temp = (LINE*)malloc(sizeof(LINE));
+    temp->begin = NULL; 
+    temp->end = NULL;
+    temp->handler = NULL;
+    temp->prev = back;
+    temp->next = front;
+    if (back) back->next = temp;
+    if (front) front->prev = temp;
+    if (!back && front) front->prev = temp;
+    if (!front && back) back->next = temp;
 }
 // ==================================================================
 void set_edge_curser(int choise){
@@ -241,13 +243,17 @@ void set_edge_curser(int choise){
       break;
     case 1:
       current->handler = current->begin + strlen(current->begin);
-      x = (int) strlen(current->begin) -2;   //just for more safty
+      x = (int) strlen(current->begin) -1;   //just for more safty
       if(current == head) x = (int) strlen(current->begin) -1; 
       move(y, x);
       break;
   }   
 }
-
+int is_line_empty(LINE* line) {
+  if (!line || !line->begin) return 1; // Treat invalid lines as empty
+  size_t len = strlen(line->begin);
+  return (len == 0) || (len == 1 && line->begin[0] == '\n');
+}
 //test functions [will be deleted]
 int print_lines(LINE* top){
   printw("\n\n\n\n========================================\n");
@@ -259,3 +265,9 @@ int print_lines(LINE* top){
   return 0;
 }
 
+void set_head(void){
+  LINE* temp;
+  temp = current;
+  while (temp->prev != NULL) temp->prev;
+  head = temp;
+}

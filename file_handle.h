@@ -9,6 +9,7 @@ int copy_file(FILE* to, FILE* from);      //copying files
 int fill_lines(FILE* temp_p);             //filling every thing in the file into the line structure
 int display_text(LINE* top);              //display the lines structure on the screen
 int free_lines(LINE* top);               //free all allocated buffer
+void save(FILE* temp_p);
 
 #define INPUT_BUFFER 1024 //1024 bytes for the input buffer
 

@@ -67,7 +67,7 @@ int fill_lines(FILE* temp_p) {
   lines_count = 1;
 
   while (fgets(stream, sizeof(stream), temp_p) != NULL) {
-  current = (LINE*)malloc(sizeof(LINE));
+    current = (LINE*)malloc(sizeof(LINE));
     if (current == NULL) {
       perror("Failed to allocate memory for current");
       return -1;
@@ -119,4 +119,14 @@ int free_lines(LINE* top){
     current = next;
   }
   return 0;
+}
+
+void save(FILE* temp_p){
+  LINE* line;
+  fseek(temp_p, 0, SEEK_SET);       // reset the file pointer the top of the file  
+  line = head;
+  while (line != NULL) {
+    fputs(line->begin, temp_p);
+    line = line->next;
+  }
 }

@@ -34,6 +34,7 @@ int insert_mode(void);
 int insert_buff(char* buffer,int x_axis, LINE* current);
 int delete_buff(int nchar, int x_axis, LINE* cline);
 int delete_line(LINE* cline);
+void create_node(char* buff, LINE* back, LINE* front);  // buff is buffer inserted back is prev node and front is next node
 
 void redraw_iline(char* buff);
 void redraw_dline(int nchar);     // +ve nchar delete back currend (normal), -ve nchar delete forward 
@@ -44,10 +45,12 @@ int move_down(void);
 int move_left(void);
 int move_right(void);
 void set_edge_curser(int choise);
+
 //resetting the end pointer in the line buffer
 int reset_end_ptr();
 
 int display_text(LINE* top);              //display the lines structure on the screen
+int is_line_empty(LINE* line);
 
   // vars dec
 

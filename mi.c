@@ -75,6 +75,7 @@ int main(int argc, char *argv[]){
     fclose(main_p);
     return EXIT_FAILURE;
   }
+  set_head();
   current = head;  
   //refresh();               // refresh the screen
 
